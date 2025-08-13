@@ -850,16 +850,21 @@ const Interview = () => {
 
               {/* Tutorial Video Placeholder */}
               <div className="bg-gray-100 rounded-lg p-6 text-center">
-                <div className="bg-primary rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                  <Play className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="font-semibold mb-2">Tutorial: How to Share Fathom Recording</h3>
+                {/* Tutorial GIF */}
+                <img
+                  src="/tutorial-fathom.gif" // replace with your actual GIF filename
+                  alt="Fathom Tutorial"
+                  className="mx-auto mb-4 rounded-lg shadow-md"
+                />
+
+                <h3 className="font-semibold mb-2">
+                  Tutorial: How to Share Fathom Recording
+                </h3>
+
                 <p className="text-muted-foreground text-sm mb-3">
                   Watch this tutorial to learn how to get your Fathom recording link and summary.
                 </p>
-                <Button variant="outline">
-                  ▶ Watch Tutorial
-                </Button>
+
               </div>
 
               <div className="space-y-4">
