@@ -42,58 +42,74 @@ const QUESTION_PHASES = {
   phase1: {
     title: "Introduction & Basic Questions",
     questions: [
-      'INTRODUCTION - Please read this aloud to the camera: "Hello, this is [Your Name] on a self-call for the screening round at icrewsystems for the position of [Role] on [Date and Time]. I am doing this under the instructions of Leonard, the Chief Executive Officer of icrewsystems. I will now answer a few questions about myself, I want you to write a detailed summary that incorporates everything I say"',
-      "Are you currently open to work? (This is mandatory - please confirm your availability)",
-      "What is your current work availability? (We require at least 4-6 hours daily commitment at icrewsystems)",
-      "How long are you willing to work with us? (Our internships usually last 3 to 6 months)",
-      "Do you think you're good at 'figuring things out'?",
-      "What role do you naturally take in group projects, and why?",
-      "Give an example where you had to balance multiple priorities. How did you manage?",
-      "Describe a time when you solved a problem without being told what to do.",
-      'If we gave you no instructions and just said "make icrewsystems better," what would you do first?',
-      "What's one mistake you made in the past that taught you something important?",
-      "What do you do when you're stuck and no one is available to help?"
+      {
+        text: 'INTRODUCTION - Please read this aloud to the camera: "Hello, this is [Your Name] on a self-call for the screening round at icrewsystems for the position of [Role] on [Date and Time]. I am doing this under the instructions of Leonard, the Chief Executive Officer of icrewsystems. I will now answer a few questions about myself, I want you to write a detailed summary that incorporates everything I say"',
+        timeLimit: 120
+      },
+      { text: "Are you currently open to work? (This is mandatory - please confirm your availability)", timeLimit: 180 },
+      { text: "What is your current work availability? (We require at least 4-6 hours daily commitment at icrewsystems)", timeLimit: 120 },
+      { text: "How long are you willing to work with us? (Our internships usually last 3 to 6 months)", timeLimit: 120 },
+      { text: "Do you think you're good at 'figuring things out'?", timeLimit: 120 },
+      { text: "What role do you naturally take in group projects, and why?", timeLimit: 60 },
+      { text: "Give an example where you had to balance multiple priorities. How did you manage?", timeLimit: 60 },
+      { text: "Describe a time when you solved a problem without being told what to do.", timeLimit: 60 },
+      { text: 'If we gave you no instructions and just said "make icrewsystems better," what would you do first?', timeLimit: 60 },
+      { text: "What's one mistake you made in the past that taught you something important?", timeLimit: 180 },
+      { text: "What do you do when you're stuck and no one is available to help?", timeLimit: 180 }
     ]
   },
   phase2: {
     title: "Additional Background Questions",
     questions: [
-      "Tell us about yourself and your background in more detail.",
-      "What sparked your interest in applying to icrewsystems?",
-      "Describe your educational journey and key learnings.",
-      "What motivates you to get up every morning?",
-      "How would your friends and colleagues describe you?",
-      "What's the most interesting project you've worked on recently?",
-      "Tell us about a book or article that changed your perspective.",
-      "What are you most passionate about outside of work or studies?",
-      "Describe a moment when you felt most proud of yourself."
+      { text: "Tell us about yourself and your background in more detail.", timeLimit: 60 },
+      { text: "What sparked your interest in applying to icrewsystems?", timeLimit: 180 },
+      { text: "Describe your educational journey and key learnings.", timeLimit: 60 },
+      { text: "What motivates you to get up every morning?", timeLimit: 180 },
+      { text: "How would your friends and colleagues describe you?", timeLimit: 180 },
+      { text: "What's the most interesting project you've worked on recently?", timeLimit: 60 },
+      { text: "Tell us about a book or article that changed your perspective.", timeLimit: 60 },
+      { text: "What are you most passionate about outside of work or studies?", timeLimit: 180 },
+      { text: "Describe a moment when you felt most proud of yourself.", timeLimit: 60 }
+    ]
+  },
+  phase3: {
+    title: "Technical & Role-Specific Questions",
+    questions: [
+      { text: "What technical skills make you a strong fit for this role?", timeLimit: 60 },
+      { text: "Describe a challenging technical problem you solved recently.", timeLimit: 300 },
+      { text: "How do you keep your skills updated in this fast-changing industry?", timeLimit: 60 },
+      { text: "If given a project with minimal instructions, how would you approach it?", timeLimit: 300 },
+      { text: "What tools or technologies are you most comfortable with, and why?", timeLimit: 60 }
     ]
   }
 };
 
-// Generate exactly 20 questions for the interview
+// try {
+//     const res = await fetch("https://n8n.srv833787.hstgr.cloud/webhook/questions");
+//     const raw = await res.json();              // json() ONCE
+//     const body = Array.isArray(raw) ? raw[0] : raw; // your console shows an array-wrapped object
+
+//     phases = isPhases(body) ? body : QUESTION_PHASES;
+//   } catch {
+//     phases = QUESTION_PHASES;
+//   }
+// Generate exactly 20 interview questions by taking them in order from each phase
 const generateInterviewQuestions = () => {
-  const selectedQuestions: Array<{question: string, phase: string, timeLimit: number}> = [];
-  
-  // Phase 1: Introduction + Basic + Core questions (11 questions)
-  QUESTION_PHASES.phase1.questions.forEach(question => {
-    selectedQuestions.push({
-      question,
-      phase: QUESTION_PHASES.phase1.title,
-      timeLimit: question.includes('INTRODUCTION') ? 120 : 180 // 2 minutes for intro, 3 minutes for others
-    });
-  });
-  
-  // Phase 2: Additional background questions (9 questions)
-  QUESTION_PHASES.phase2.questions.forEach(question => {
-    selectedQuestions.push({
-      question,
-      phase: QUESTION_PHASES.phase2.title,
-      timeLimit: 180 // 3 minutes per question
-    });
-  });
-  
-  return selectedQuestions; // Total: 20 questions
+  const selected: Array<{question: string, phase: string, timeLimit: number}> = [];
+
+  for (const phase of Object.values(QUESTION_PHASES)) {
+    for (const q of phase.questions) {
+      if (selected.length < 20) {
+        selected.push({
+          question: q.text,
+          phase: phase.title,
+          timeLimit: q.timeLimit
+        });
+      }
+    }
+  }
+
+  return selected;
 };
 
 const Interview = () => {
@@ -108,8 +124,7 @@ const Interview = () => {
     { id: "video", label: "Video is ON", checked: false },
     { id: "audio", label: "Audio is ON", checked: false },
     { id: "screenshare", label: "Screen sharing is ON (share browser tab)", checked: false },
-    { id: "environment", label: "In a quiet environment", checked: false },
-    { id: "timer", label: "Timer is set for 30 minutes", checked: false }
+    { id: "environment", label: "In a quiet environment", checked: false }
   ]);
   const [troubleshootingOpen, setTroubleshootingOpen] = useState<Record<string, boolean>>({});
   const [interviewQuestions] = useState(() => generateInterviewQuestions());
@@ -309,11 +324,7 @@ const Interview = () => {
         "→ Check browser permissions for microphone and camera",
         "→ Click the Fathom extension icon and ensure it's enabled",
         "→ Make sure you've granted recording permissions",
-        "",
-        "Can't invite Fathom to meeting:",
-        "→ Use exactly this email: assistant@fathom.video",
-        "→ Send the invite from within Google Meet",
-        "→ Wait for Fathom to join (usually takes 10-20 seconds)"
+        ""
       ]
     },
     meet: {
@@ -502,19 +513,10 @@ const Interview = () => {
               <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <Clock className="h-8 w-8 text-blue-600" />
-                  <h3 className="text-2xl font-semibold text-blue-800">30-40 Minutes Required</h3>
+                  <h3 className="text-2xl font-semibold text-blue-800">Interview Time: ~20-30 minutes</h3>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4 text-blue-700">
                   <div>
-                    <h4 className="font-semibold mb-2">Setup Time: ~10 minutes</h4>
-                    <ul className="text-sm space-y-1">
-                      <li>• Install Fathom extension</li>
-                      <li>• Set up Google Meet</li>
-                      <li>• Complete system checks</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Interview Time: ~20-30 minutes</h4>
                     <ul className="text-sm space-y-1">
                       <li>• 20 questions across 4 phases</li>
                       <li>• 3 minutes per question maximum</li>
